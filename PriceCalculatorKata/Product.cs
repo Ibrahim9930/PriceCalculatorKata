@@ -27,7 +27,7 @@ namespace PriceCalculatorKata
         {
             get
             {
-                return BasePrice + (TaxPercentage / 100.0f) * BasePrice;
+                return (float)Math.Round(BasePrice + (TaxPercentage / 100.0f) * BasePrice,2);
             }
         }
         public int TaxPercentage { get; set; }
