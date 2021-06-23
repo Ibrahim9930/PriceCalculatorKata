@@ -42,7 +42,7 @@ namespace PriceCalculatorsKataTests
 
             Product.discount = 15;
 
-            Assert.AreEqual(21.26f, productWithDefaultTax.PriceAfterTaxAndDicount);
+            Assert.AreEqual(21.26f, productWithDefaultTax.FinalPrice);
 
 
         }

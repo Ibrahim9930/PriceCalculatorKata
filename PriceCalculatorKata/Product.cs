@@ -25,12 +25,26 @@ namespace PriceCalculatorKata
                 }
             }
         }
+        private float CalculateTax()
+        {
+            return RoundDigits(BasePrice * (TaxPercentage / 100.0f));
+        }
 
-        public float PriceAfterTaxAndDicount
+        private float CalculateDiscount()
+        {
+            return RoundDigits(BasePrice * (discount / 100.0f));
+        }
+
+        private float RoundDigits(float unrounded)
+        {
+            return (float)Math.Round(unrounded,2);
+        }
+
+        public float FinalPrice
         {
             get
             {
-                return (float)Math.Round((BasePrice * (1+(TaxPercentage/100.0f))) - BasePrice * (discount / 100.0f), 2);
+                return RoundDigits( BasePrice + CalculateTax() - CalculateDiscount());
             }
         }
         public int TaxPercentage { get; set; }
@@ -43,7 +57,7 @@ namespace PriceCalculatorKata
 
         public void Display(Action<string> displayMethod)
         {
-            displayMethod($"{Name}'s price before tax : {BasePrice:0.00}$ and after a {TaxPercentage}% tax : {PriceAfterTaxAndDicount:0.00}$");
+            displayMethod($"{Name}'s price before tax : {BasePrice:0.00}$ and after a {TaxPercentage}% tax : {FinalPrice:0.00}$");
         }
 
 
