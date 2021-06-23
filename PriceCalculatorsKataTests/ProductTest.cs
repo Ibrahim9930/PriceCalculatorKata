@@ -30,7 +30,7 @@ namespace PriceCalculatorsKataTests
         }
 
         [Test]
-        public void productTaxCalculation()
+        public void productTaxAndDiscountCalculation()
         {
             var productWithDefaultTax = new Product(0)
             {
@@ -38,15 +38,11 @@ namespace PriceCalculatorsKataTests
                 BasePrice = 20.25f,
             };
 
-            var productWithCustomTax = new Product(1)
-            {
-                Name = "testing product",
-                BasePrice = 20.25f,
-                TaxPercentage = 21,
-            };
 
-            Assert.AreEqual(24.3f, productWithDefaultTax.PriceAfterTax);
-            Assert.AreEqual(24.5f, productWithCustomTax.PriceAfterTax);
+
+            Product.discount = 15;
+
+            Assert.AreEqual(21.26f, productWithDefaultTax.PriceAfterTaxAndDicount);
 
 
         }
