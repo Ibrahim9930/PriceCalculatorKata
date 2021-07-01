@@ -27,7 +27,7 @@ namespace PriceCalculatorKata.Report
         public void Report(Action<string> displayMethod)
         {
             displayMethod($"{_product.Name}'s price before tax : {_product.BasePrice:0.00}$" +
-                          $" and after a {UniversalTax.Tax}% tax : {_product.FinalPrice:0.00}$ " +
+                          $" and after a {UniversalTax.Tax}% tax : {_product.FinalPrice:0.00}$ with a discount of " +
                           $"{GetDiscountTextRepresentation()}");
         }
 
@@ -35,7 +35,7 @@ namespace PriceCalculatorKata.Report
         {
             return _allDiscounts.getDiscount() == 0
                 ? "no discount applied"
-                : $"{_productPriceCalculator.Calculate():00}$ discount applied";
+                : $"with {_productPriceCalculator.CalculateDiscount():0.00}$ discount applied";
         }
     }
 }

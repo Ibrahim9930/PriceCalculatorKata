@@ -33,7 +33,7 @@ namespace PriceCalculatorKata
 
         public float FinalPrice => _priceCalculator.Calculate();
 
-        public void Display(Action<string> displayMethod)
+        public void Report(Action<string> displayMethod)
         {
             _reporter.Report(displayMethod);
         }
