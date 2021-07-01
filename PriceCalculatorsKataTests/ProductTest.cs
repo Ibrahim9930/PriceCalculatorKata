@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using PriceCalculatorKata;
 using PriceCalculatorKata.Dicsount;
@@ -63,6 +65,23 @@ namespace PriceCalculatorsKataTests
                 Name = "The Little Prince"
             };
             Assert.AreEqual(21.46f,Math.Round(product.FinalPrice),2);
+        }
+
+        [Test]
+        public void ProductReporting()
+        {
+            UPCBasedDiscount.UPCDiscounts.Add(12345,7);
+            Product product = new Product(12345, 20.25f)
+            {
+                Name = "The Little Prince",
+            };
+            product.Report(s =>
+            {
+                Regex rx = new Regex("(?<=(discount).*)([0-9]+.[0-9]+)", RegexOptions.IgnoreCase);
+                MatchCollection matches = rx.Matches(s);
+                var match = matches.Single();
+                Assert.AreEqual("4.45",match.Value);
+            });
         }
     }
 }
