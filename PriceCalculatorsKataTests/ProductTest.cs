@@ -1,5 +1,11 @@
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using PriceCalculatorKata;
+using PriceCalculatorKata.Dicsount;
+using PriceCalculatorKata.Tax;
+
 namespace PriceCalculatorsKataTests
 {
     public class Tests
@@ -7,22 +13,20 @@ namespace PriceCalculatorsKataTests
         [SetUp]
         public void Setup()
         {
+            UniversalTax.Tax = 20f;
+            UniversalDiscount.Discount = 15f;
         }
 
         [Test]
         public void productPricePercision()
         {
-            var roundedUpPriceProduct = new Product(0)
+            var roundedUpPriceProduct = new Product(0,20.256f)
             {
-                BasePrice = 20.256f,
                 Name = "testing product",
-                TaxPercentage = 20,
             };
-            var roundedDownPriceProduct = new Product(1)
+            var roundedDownPriceProduct = new Product(1,20.254f)
             {
-                BasePrice = 20.254f,
                 Name = "testing product",
-                TaxPercentage = 20,
             };
 
             Assert.AreEqual(20.26f, roundedUpPriceProduct.BasePrice);
@@ -32,20 +36,52 @@ namespace PriceCalculatorsKataTests
         [Test]
         public void productTaxAndDiscountCalculation()
         {
-            var productWithDefaultTax = new Product(0)
+            Product productWithDefaultTax = new Product(1,20.25f)
             {
-                Name = "testing product",
-                BasePrice = 20.25f,
+                Name = "s",
             };
-
-
-
-            Product.discount = 15;
-
             Assert.AreEqual(21.26f, productWithDefaultTax.FinalPrice);
-
-
         }
+
+        [Test]
+        public void ProductWithSpecialDiscountFinalPriceCalculations1()
+        {
+            UPCBasedDiscount.UPCDiscounts.Add(12345,7);
+            Product product = new Product(12345, 20.25f)
+            {
+                Name = "The Little Prince"
+            };
+            Assert.AreEqual(19.84f,Math.Round(product.FinalPrice),2);
         }
-    
+        
+        [Test]
+        public void ProductWithSpecialDiscountFinalPriceCalculations2()
+        {
+            UniversalTax.Tax = 21;
+            
+            UPCBasedDiscount.UPCDiscounts.Add(789,7);
+            Product product = new Product(12345, 20.25f)
+            {
+                Name = "The Little Prince"
+            };
+            Assert.AreEqual(21.46f,Math.Round(product.FinalPrice),2);
+        }
+
+        [Test]
+        public void ProductReporting()
+        {
+            UPCBasedDiscount.UPCDiscounts.Add(12345,7);
+            Product product = new Product(12345, 20.25f)
+            {
+                Name = "The Little Prince",
+            };
+            product.Report(s =>
+            {
+                Regex rx = new Regex("(?<=(discount).*)([0-9]+.[0-9]+)", RegexOptions.IgnoreCase);
+                MatchCollection matches = rx.Matches(s);
+                var match = matches.Single();
+                Assert.AreEqual("4.45",match.Value);
+            });
+        }
+    }
 }
