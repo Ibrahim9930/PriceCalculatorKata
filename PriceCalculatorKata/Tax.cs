@@ -7,11 +7,12 @@
 
     public class UniversalTax : ITax
     {
-        private readonly float _tax;
+        public static float Tax = 0;
 
+    
         public float getTax()
         {
-            return _tax;
+            return Tax;
         }
     }
 
@@ -20,7 +21,7 @@
         private ITax[] _taxes;
         private float _taxSummation;
 
-        public AllTaxes(ITax[] taxes)
+        public AllTaxes(params ITax[] taxes)
         {
             _taxes = taxes;
             _taxSummation = 0;

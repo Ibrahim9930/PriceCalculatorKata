@@ -6,31 +6,28 @@ namespace PriceCalculatorKata.Dicsount
     {
         float getDiscount();
     }
+
     public class UniversalDiscount : IDiscount
     {
-        private readonly float _discount;
+        public static float Discount = 0;
 
-        public UniversalDiscount(float discount)
-        {
-            _discount = discount;
-        }
         public float getDiscount()
         {
-            return _discount;
+            return Discount;
         }
     }
 
     public class UPCBasedDiscount : IDiscount
     {
-        public static Dictionary<int, float> UPCDiscounts { get; private set; }
-        
+        public static Dictionary<int, float> UPCDiscounts { get; private set; } = new Dictionary<int, float>();
+
         private int _productUPC;
 
         public UPCBasedDiscount(int productUPC)
         {
             _productUPC = productUPC;
-            UPCDiscounts = new Dictionary<int, float>();
         }
+
         public float getDiscount()
         {
             return UPCDiscounts.GetValueOrDefault(_productUPC);
@@ -40,21 +37,22 @@ namespace PriceCalculatorKata.Dicsount
     public class AllDiscounts : IDiscount
     {
         private IDiscount[] _discounts;
-        private float _discountSummation;
 
-        public AllDiscounts(IDiscount[] discounts)
+        public AllDiscounts(params IDiscount[] discounts)
         {
             _discounts = discounts;
-            _discountSummation = 0;
         }
+
         public float getDiscount()
         {
+            float discountSummation = 0;
+
             foreach (var discount in _discounts)
             {
-                _discountSummation += discount.getDiscount();
+                discountSummation += discount.getDiscount();
             }
 
-            return _discountSummation;
+            return discountSummation;
         }
     }
 }
