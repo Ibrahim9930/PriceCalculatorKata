@@ -41,7 +41,12 @@ namespace PriceCalculatorKata.Dicsount
     {
         private IDiscount[] _discounts;
         private float _discountSummation;
-        
+
+        public AllDiscounts(IDiscount[] discounts)
+        {
+            _discounts = discounts;
+            _discountSummation = 0;
+        }
         public float getDiscount()
         {
             foreach (var discount in _discounts)
