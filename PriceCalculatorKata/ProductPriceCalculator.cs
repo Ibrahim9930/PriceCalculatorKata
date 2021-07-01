@@ -28,12 +28,12 @@ namespace PriceCalculatorKata
             return RoundDigits( _productBasePrice + CalculateTax() - CalculateDiscount());
         }
         
-        private float CalculateTax()
+        public float CalculateTax()
         {
             return RoundDigits(_productBasePrice * (_allTaxes.getTax() / 100.0f));
         }
 
-        private float CalculateDiscount()
+        public float CalculateDiscount()
         {
             return RoundDigits(_productBasePrice * (_allDiscounts.getDiscount() / 100.0f));
         }
