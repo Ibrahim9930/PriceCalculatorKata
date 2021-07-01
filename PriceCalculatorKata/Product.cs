@@ -8,15 +8,11 @@ namespace PriceCalculatorKata
     {
         public static float discount = 0;
         public string Name { get; set; }
-        public int UPC { get; }
-
+        public int UPC { get; private set; }
         private float _basePrice;
         public float BasePrice
         {
-            get
-            {
-                return _basePrice;
-            }
+            get => _basePrice;
             set
             {
                 if (value > 0)
@@ -35,18 +31,12 @@ namespace PriceCalculatorKata
             return RoundDigits(BasePrice * (discount / 100.0f));
         }
 
-        private float RoundDigits(float unrounded)
+        private static float RoundDigits(float unrounded)
         {
             return (float)Math.Round(unrounded,2);
         }
 
-        public float FinalPrice
-        {
-            get
-            {
-                return RoundDigits( BasePrice + CalculateTax() - CalculateDiscount());
-            }
-        }
+        public float FinalPrice => RoundDigits( BasePrice + CalculateTax() - CalculateDiscount());
         public int TaxPercentage { get; set; }
 
         public Product(int UPC)
@@ -57,9 +47,13 @@ namespace PriceCalculatorKata
 
         public void Display(Action<string> displayMethod)
         {
-            displayMethod($"{Name}'s price before tax : {BasePrice:0.00}$ and after a {TaxPercentage}% tax : {FinalPrice:0.00}$");
+            displayMethod($"{Name}'s price before tax : {BasePrice:0.00}$ and after a {TaxPercentage}% " +
+                          $"tax : {FinalPrice:0.00}$ {GetDiscountTextRepresentation()}");
         }
 
-
+        private string GetDiscountTextRepresentation()
+        {
+            return discount == 0 ? "no discount applied" : $"{CalculateDiscount():00}$ discount applied";
+        }
     }
 }
