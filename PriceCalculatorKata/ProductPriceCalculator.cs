@@ -62,29 +62,15 @@ namespace PriceCalculatorKata
             return RoundDigits(highPrecedenceDiscount + lowPrecedenceDiscount);
         }
 
-   
-
         private float CalculateHighPrecedenceDiscount(Product product)
         {
-            float discountSummation = 0;
-            foreach (var discount in _highPrecedenceDiscounts)
-            {
-                discountSummation += discount.getModificationPercentage(product);
-            }
-
-            return RoundDigits(product.BasePrice * (discountSummation / 100.0f));
+            return CalculateDiscountAmount(_highPrecedenceDiscounts, product.BasePrice, product);
         }
 
-  
         private float CalculateLowPrecedenceDiscount(Product product)
         {
-            float discountSummation = 0;
-            foreach (var discount in _lowPrecedenceDiscounts)
-            {
-                discountSummation += discount.getModificationPercentage(product);
-            }
-
-            return CalculatePriceAfterHighPrecedenceDiscount(product) * (discountSummation / 100.0f);
+            return CalculateDiscountAmount(_lowPrecedenceDiscounts, CalculatePriceAfterHighPrecedenceDiscount(product),
+                product);
         }
 
         private float CalculatePriceAfterHighPrecedenceDiscount(Product product)
