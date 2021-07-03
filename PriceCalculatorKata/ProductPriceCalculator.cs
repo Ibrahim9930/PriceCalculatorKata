@@ -14,6 +14,18 @@ namespace PriceCalculatorKata
         Multiplicative
     }
 
+    public enum CappingMethod
+    {
+        Absolute,
+        Relative
+    }
+
+    public struct DiscountCap
+    {
+        public float Amount;
+        public CappingMethod CappingMethod;
+    }
+
     public class ProductPriceCalculator : IPriceCalculator
     {
         private readonly IPriceModifier[] _allTaxes;
@@ -22,15 +34,23 @@ namespace PriceCalculatorKata
         private readonly IPriceModifier[] _expenses;
         private DiscountCombinationMethod _discountCombinationMethod;
 
+        private DiscountCap _cap; 
+
         public ProductPriceCalculator(IPriceModifier[] allTaxes, IPriceModifier[] lowPrecedenceDiscounts,
             IPriceModifier[] highPrecedenceDiscounts, IPriceModifier[] expenses,
-            DiscountCombinationMethod discountCombinationMethod = DiscountCombinationMethod.Additive)
+            DiscountCombinationMethod discountCombinationMethod = DiscountCombinationMethod.Additive,
+            DiscountCap? discountCap = null)
         {
             _allTaxes = allTaxes;
             _lowPrecedenceDiscounts = lowPrecedenceDiscounts;
             _highPrecedenceDiscounts = highPrecedenceDiscounts;
             _expenses = expenses;
             _discountCombinationMethod = discountCombinationMethod;
+            _cap = discountCap ?? new DiscountCap()
+            {
+                Amount = float.MaxValue,
+                CappingMethod = CappingMethod.Absolute
+            };
         }
 
         public float Calculate(Product product)
