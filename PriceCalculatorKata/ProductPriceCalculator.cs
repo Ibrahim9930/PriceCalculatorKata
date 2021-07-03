@@ -24,26 +24,43 @@ namespace PriceCalculatorKata
             _lowPrecedenceDiscounts = new DiscountsSummation(new UniversalDiscount());
             _highPrecedenceDiscounts = new DiscountsSummation(new UPCBasedDiscount(productUpc));
         }
-        
+
         public float Calculate()
         {
-            return RoundDigits( _productBasePrice + CalculateTax() - CalculateDiscount());
+            return RoundDigits(_productBasePrice + CalculateTax() - CalculateDiscount());
         }
-        
+
         public float CalculateTax()
         {
-            return RoundDigits(_productBasePrice * (_allTaxes.getTax() / 100.0f));
+            return RoundDigits(CalculatePriceAfterHighPrecedenceDiscount() * (_allTaxes.getTax() / 100.0f));
         }
 
         public float CalculateDiscount()
         {
-            return RoundDigits(_productBasePrice * (_allDiscounts.getDiscount() / 100.0f));
+            float highPrecedenceDiscount =
+                CalculateHighPrecedenceDiscount();
+            float lowPrecedenceDiscount =
+                RoundDigits(CalculateLowPrecedenceDiscount());
+            return RoundDigits(highPrecedenceDiscount + lowPrecedenceDiscount);
+        }
+        
+        private float CalculatePriceAfterHighPrecedenceDiscount()
+        {
+            return (_productBasePrice - CalculateHighPrecedenceDiscount());
         }
 
+        private float CalculateHighPrecedenceDiscount()
+        {
+            return RoundDigits(_productBasePrice * (_highPrecedenceDiscounts.getDiscount() / 100.0f));
+        }
+
+        private float CalculateLowPrecedenceDiscount()
+        {
+            return CalculatePriceAfterHighPrecedenceDiscount() * (_lowPrecedenceDiscounts.getDiscount() / 100.0f);
+        }
         private static float RoundDigits(float unrounded)
         {
-            return (float)Math.Round(unrounded,2);
+            return (float) Math.Round(unrounded, 2);
         }
-
     }
 }
