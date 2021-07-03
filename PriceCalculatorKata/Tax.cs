@@ -16,12 +16,12 @@
         }
     }
 
-    public class AllTaxes : ITax
+    public class TaxesSummation : ITax
     {
         private ITax[] _taxes;
         private float _taxSummation;
 
-        public AllTaxes(params ITax[] taxes)
+        public TaxesSummation(params ITax[] taxes)
         {
             _taxes = taxes;
             _taxSummation = 0;

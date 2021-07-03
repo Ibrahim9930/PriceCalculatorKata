@@ -18,7 +18,7 @@ namespace PriceCalculatorKata.Report
         public ProductReporter(Product product)
         {
             _product = product;
-            _allDiscounts = new AllDiscounts(new UniversalDiscount(),
+            _allDiscounts = new DiscountsSummation(new UniversalDiscount(),
                 new UPCBasedDiscount(_product.UPC));
             _productPriceCalculator = new ProductPriceCalculator(product);
         }
