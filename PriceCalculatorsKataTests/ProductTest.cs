@@ -51,7 +51,7 @@ namespace PriceCalculatorsKataTests
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(19.84f,Math.Round(product.FinalPrice),2);
+            Assert.AreEqual(19.78f,Math.Round(product.FinalPrice),2);
         }
         
         [Test]
@@ -80,7 +80,7 @@ namespace PriceCalculatorsKataTests
                 Regex rx = new Regex("(?<=(discount).*)([0-9]+.[0-9]+)", RegexOptions.IgnoreCase);
                 MatchCollection matches = rx.Matches(s);
                 var match = matches.Single();
-                Assert.AreEqual("4.45",match.Value);
+                Assert.AreEqual("4.24",match.Value);
             });
         }
     }
