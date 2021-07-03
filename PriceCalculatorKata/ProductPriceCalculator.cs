@@ -8,45 +8,47 @@ namespace PriceCalculatorKata
         float Calculate(Product product);
     }
 
+    public enum DiscountCombinationMethod
+    {
+        Additive,
+        Multiplicative
+    }
+
     public class ProductPriceCalculator : IPriceCalculator
     {
         private readonly IPriceModifier[] _allTaxes;
         private readonly IPriceModifier[] _lowPrecedenceDiscounts;
         private readonly IPriceModifier[] _highPrecedenceDiscounts;
         private readonly IPriceModifier[] _expenses;
+        private DiscountCombinationMethod _discountCombinationMethod;
 
         public ProductPriceCalculator(IPriceModifier[] allTaxes, IPriceModifier[] lowPrecedenceDiscounts,
-            IPriceModifier[] highPrecedenceDiscounts, IPriceModifier[] expenses)
+            IPriceModifier[] highPrecedenceDiscounts, IPriceModifier[] expenses,
+            DiscountCombinationMethod discountCombinationMethod = DiscountCombinationMethod.Additive)
         {
             _allTaxes = allTaxes;
             _lowPrecedenceDiscounts = lowPrecedenceDiscounts;
             _highPrecedenceDiscounts = highPrecedenceDiscounts;
             _expenses = expenses;
+            _discountCombinationMethod = discountCombinationMethod;
         }
 
         public float Calculate(Product product)
         {
-            return RoundDigits(product.BasePrice + CalculateTax(product) + CalculateExpenses(product) - CalculateDiscount(product));
+            return RoundDigits(product.BasePrice + CalculateTax(product) + CalculateExpenses(product) -
+                               CalculateDiscount(product));
         }
 
         public float CalculateTax(Product product)
         {
-            float taxSummation = 0;
-            foreach (var tax in _allTaxes)
-            {
-                taxSummation += tax.getModificationPercentage(product);
-            }
+            float taxSummation = CalculateModifierSummation(_allTaxes, product);
 
             return RoundDigits(CalculatePriceAfterHighPrecedenceDiscount(product) * (taxSummation / 100.0f));
         }
 
         public float CalculateExpenses(Product product)
         {
-            float expenseSummation = 0;
-            foreach (var expense in _expenses)
-            {
-                expenseSummation += expense.getModificationPercentage(product);
-            }
+            float expenseSummation = CalculateModifierSummation(_expenses, product);
 
             return RoundDigits(product.BasePrice * (expenseSummation / 100.0f));
         }
@@ -60,35 +62,35 @@ namespace PriceCalculatorKata
             return RoundDigits(highPrecedenceDiscount + lowPrecedenceDiscount);
         }
 
-   
-
         private float CalculateHighPrecedenceDiscount(Product product)
         {
-            float discountSummation = 0;
-            foreach (var discount in _highPrecedenceDiscounts)
-            {
-                discountSummation += discount.getModificationPercentage(product);
-            }
-
-            return RoundDigits(product.BasePrice * (discountSummation / 100.0f));
+            return CalculateDiscountAmount(_highPrecedenceDiscounts, product.BasePrice, product);
         }
 
-  
         private float CalculateLowPrecedenceDiscount(Product product)
         {
-            float discountSummation = 0;
-            foreach (var discount in _lowPrecedenceDiscounts)
-            {
-                discountSummation += discount.getModificationPercentage(product);
-            }
-
-            return CalculatePriceAfterHighPrecedenceDiscount(product) * (discountSummation / 100.0f);
+            return CalculateDiscountAmount(_lowPrecedenceDiscounts, CalculatePriceAfterHighPrecedenceDiscount(product),
+                product);
         }
 
         private float CalculatePriceAfterHighPrecedenceDiscount(Product product)
         {
             return (product.BasePrice - CalculateHighPrecedenceDiscount(product));
         }
+
+        private float CalculateModifierSummation(IPriceModifier[] modifiers, Product product)
+        {
+            float sum = 0;
+            foreach (var modifier in modifiers)
+            {
+                sum += modifier.getModificationPercentage(product);
+            }
+
+            return sum;
+        }
+
+ 
+
         private static float RoundDigits(float unrounded)
         {
             return (float) Math.Round(unrounded, 2);
