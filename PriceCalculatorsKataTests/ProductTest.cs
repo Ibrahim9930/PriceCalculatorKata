@@ -11,11 +11,6 @@ namespace PriceCalculatorsKataTests
 {
     public class Tests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
         [Test]
         public void ProductPricePrecision()
         {
@@ -68,7 +63,7 @@ namespace PriceCalculatorsKataTests
         }
 
         [Test]
-        public void ProductWithSpecialDiscountFinalPriceCalculations1()
+        public void ProductWithSpecialDiscountPriceCalculations1()
         {
             UniversalTax.Tax = 20;
             UniversalDiscount.Discount = 15;
@@ -89,7 +84,7 @@ namespace PriceCalculatorsKataTests
         }
 
         [Test]
-        public void ProductWithNoSpecialDiscountFinalPriceCalculations2()
+        public void ProductWithNoSpecialDiscountPriceCalculations2()
         {
             UniversalTax.Tax = 20;
             UniversalDiscount.Discount = 15;
@@ -131,7 +126,7 @@ namespace PriceCalculatorsKataTests
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(22.45f, p.FinalPrice);
+            Assert.AreEqual(22.44f, p.FinalPrice);
         }
 
         [Test]
@@ -145,7 +140,7 @@ namespace PriceCalculatorsKataTests
             IPriceCalculator productPriceCalculator =
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
-   
+
             Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
@@ -180,8 +175,33 @@ namespace PriceCalculatorsKataTests
                 Regex rx = new Regex("(?<=(discount).*)([0-9]+.[0-9]+)", RegexOptions.IgnoreCase);
                 MatchCollection matches = rx.Matches(s);
                 var match = matches.Single();
-                Assert.AreEqual("4.45", match.Value);
+                Assert.AreEqual("4.46", match.Value);
             });
+        }
+
+        [Test]
+        public void ProductPriceCalculationsWithMultiplicativeDiscounts()
+        {
+            UniversalTax.Tax = 21;
+            UniversalDiscount.Discount = 15;
+            UPCBasedDiscount.UPCDiscounts.TryAdd(12345, 7);
+            IPriceModifier[] taxes = {new UniversalTax()};
+            IPriceModifier[] lowPrecedenceDiscounts = {new UniversalDiscount(), new UPCBasedDiscount()};
+            IPriceModifier[] highPrecedenceDiscounts = { };
+            IPriceModifier[] expenses =
+            {
+                new AbsoluteExpense(2.2f, "Transport"),
+                new RelativeExpense(1, "Packaging")
+            };
+            IPriceCalculator productPriceCalculator =
+                new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses,
+                    DiscountCombinationMethod.Multiplicative);
+            IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
+            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            {
+                Name = "The Little Prince"
+            };
+            Assert.AreEqual(22.66f, p.FinalPrice);
         }
     }
 }
