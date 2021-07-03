@@ -79,7 +79,9 @@ namespace PriceCalculatorKata
                 CalculateHighPrecedenceDiscount(product);
             float lowPrecedenceDiscount =
                 RoundDigits(CalculateLowPrecedenceDiscount(product));
-            return RoundDigits(highPrecedenceDiscount + lowPrecedenceDiscount);
+            float totalDiscounts = highPrecedenceDiscount + lowPrecedenceDiscount;
+            CapDiscounts(ref totalDiscounts, product);
+            return RoundDigits(totalDiscounts);
         }
 
         private float CalculateHighPrecedenceDiscount(Product product)
@@ -109,7 +111,37 @@ namespace PriceCalculatorKata
             return sum;
         }
 
- 
+        private float CalculateDiscountAmount(IPriceModifier[] discounts, float priceAccumulator, Product product)
+        {
+            float totalDiscounts = 0;
+            foreach (var discount in discounts)
+            {
+                float currentDiscount =
+                    RoundDigits(priceAccumulator * (discount.getModificationPercentage(product) / 100.0f));
+                totalDiscounts += currentDiscount;
+                if (_discountCombinationMethod == DiscountCombinationMethod.Multiplicative)
+                {
+                    priceAccumulator -= currentDiscount;
+                }
+            }
+
+            return RoundDigits(totalDiscounts);
+        }
+
+        private void CapDiscounts(ref float totalDiscounts, Product product)
+        {
+            if (_cap.CappingMethod == CappingMethod.Absolute)
+            {
+                if (totalDiscounts > _cap.Amount)
+                    totalDiscounts = _cap.Amount;
+            }
+            else if (_cap.CappingMethod == CappingMethod.Relative)
+            {
+                float cappingAmount = (_cap.Amount / 100.0f) * product.BasePrice;
+                if (totalDiscounts > cappingAmount)
+                    totalDiscounts = cappingAmount;
+            }
+        }
 
         private static float RoundDigits(float unrounded)
         {
