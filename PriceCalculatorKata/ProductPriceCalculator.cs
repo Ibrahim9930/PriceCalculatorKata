@@ -8,19 +8,21 @@ namespace PriceCalculatorKata
     {
         float Calculate();
     }
+
     public class ProductPriceCalculator : IPriceCalculator
     {
         private float _productBasePrice;
         private readonly ITax _allTaxes;
-        private readonly IDiscount _allDiscounts;
+        private readonly IDiscount _lowPrecedenceDiscounts;
+        private readonly IDiscount _highPrecedenceDiscounts;
 
         public ProductPriceCalculator(Product product)
         {
             _productBasePrice = product.BasePrice;
             var productUpc = product.UPC;
             _allTaxes = new TaxesSummation(new UniversalTax());
-            _allDiscounts = new DiscountsSummation(new UniversalDiscount(),
-                new UPCBasedDiscount(productUpc));
+            _lowPrecedenceDiscounts = new DiscountsSummation(new UniversalDiscount());
+            _highPrecedenceDiscounts = new DiscountsSummation(new UPCBasedDiscount(productUpc));
         }
         
         public float Calculate()
