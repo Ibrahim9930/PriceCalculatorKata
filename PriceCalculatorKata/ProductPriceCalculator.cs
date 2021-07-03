@@ -1,82 +1,94 @@
 ﻿using System;
-using PriceCalculatorKata.Dicsount;
-using PriceCalculatorKata.Tax;
+using PriceCalculatorKata.PriceModifier;
 
 namespace PriceCalculatorKata
 {
     public interface IPriceCalculator
     {
-        float Calculate();
+        float Calculate(Product product);
     }
 
     public class ProductPriceCalculator : IPriceCalculator
     {
-        private float _productBasePrice;
-        private readonly ITax[] _allTaxes;
-        private readonly IDiscount[] _lowPrecedenceDiscounts;
-        private readonly IDiscount[] _highPrecedenceDiscounts;
+        private readonly IPriceModifier[] _allTaxes;
+        private readonly IPriceModifier[] _lowPrecedenceDiscounts;
+        private readonly IPriceModifier[] _highPrecedenceDiscounts;
+        private readonly IPriceModifier[] _expenses;
 
-        public ProductPriceCalculator(Product product)
+        public ProductPriceCalculator(IPriceModifier[] allTaxes, IPriceModifier[] lowPrecedenceDiscounts,
+            IPriceModifier[] highPrecedenceDiscounts, IPriceModifier[] expenses)
         {
-            _productBasePrice = product.BasePrice;
-            var productUpc = product.UPC;
-            _allTaxes = new ITax[]
-            {
-                new UniversalTax()
-            };
-            _lowPrecedenceDiscounts = new IDiscount[] {new UniversalDiscount()};
-            _highPrecedenceDiscounts = new IDiscount[] {new UPCBasedDiscount(productUpc)};
+            _allTaxes = allTaxes;
+            _lowPrecedenceDiscounts = lowPrecedenceDiscounts;
+            _highPrecedenceDiscounts = highPrecedenceDiscounts;
+            _expenses = expenses;
         }
 
-        public float Calculate()
+        public float Calculate(Product product)
         {
-            return RoundDigits(_productBasePrice + CalculateTax() - CalculateDiscount());
+            return RoundDigits(product.BasePrice + CalculateTax(product) + CalculateExpenses(product) - CalculateDiscount(product));
         }
 
-        public float CalculateTax()
+        public float CalculateTax(Product product)
         {
             float taxSummation = 0;
             foreach (var tax in _allTaxes)
             {
-                taxSummation += tax.getTax();
+                taxSummation += tax.getModificationPercentage(product);
             }
-            return RoundDigits(CalculatePriceAfterHighPrecedenceDiscount() * (taxSummation / 100.0f));
+
+            return RoundDigits(CalculatePriceAfterHighPrecedenceDiscount(product) * (taxSummation / 100.0f));
         }
 
-        public float CalculateDiscount()
+        public float CalculateExpenses(Product product)
+        {
+            float expenseSummation = 0;
+            foreach (var expense in _expenses)
+            {
+                expenseSummation += expense.getModificationPercentage(product);
+            }
+
+            return RoundDigits(product.BasePrice * (expenseSummation / 100.0f));
+        }
+
+        public float CalculateDiscount(Product product)
         {
             float highPrecedenceDiscount =
-                CalculateHighPrecedenceDiscount();
+                CalculateHighPrecedenceDiscount(product);
             float lowPrecedenceDiscount =
-                RoundDigits(CalculateLowPrecedenceDiscount());
+                RoundDigits(CalculateLowPrecedenceDiscount(product));
             return RoundDigits(highPrecedenceDiscount + lowPrecedenceDiscount);
         }
 
-        private float CalculatePriceAfterHighPrecedenceDiscount()
-        {
-            return (_productBasePrice - CalculateHighPrecedenceDiscount());
-        }
+   
 
-        private float CalculateHighPrecedenceDiscount()
+        private float CalculateHighPrecedenceDiscount(Product product)
         {
             float discountSummation = 0;
             foreach (var discount in _highPrecedenceDiscounts)
             {
-                discountSummation += discount.getDiscount();
+                discountSummation += discount.getModificationPercentage(product);
             }
-            return RoundDigits(_productBasePrice * (discountSummation / 100.0f));
+
+            return RoundDigits(product.BasePrice * (discountSummation / 100.0f));
         }
 
-        private float CalculateLowPrecedenceDiscount()
+  
+        private float CalculateLowPrecedenceDiscount(Product product)
         {
             float discountSummation = 0;
             foreach (var discount in _lowPrecedenceDiscounts)
             {
-                discountSummation += discount.getDiscount();
+                discountSummation += discount.getModificationPercentage(product);
             }
-            return CalculatePriceAfterHighPrecedenceDiscount() * (discountSummation / 100.0f);
+
+            return CalculatePriceAfterHighPrecedenceDiscount(product) * (discountSummation / 100.0f);
         }
 
+        private float CalculatePriceAfterHighPrecedenceDiscount(Product product)
+        {
+            return (product.BasePrice - CalculateHighPrecedenceDiscount(product));
+        }
         private static float RoundDigits(float unrounded)
         {
             return (float) Math.Round(unrounded, 2);
