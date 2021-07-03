@@ -18,8 +18,8 @@ namespace PriceCalculatorKata
         {
             _productBasePrice = product.BasePrice;
             var productUpc = product.UPC;
-            _allTaxes = new AllTaxes(new UniversalTax());
-            _allDiscounts = new AllDiscounts(new UniversalDiscount(),
+            _allTaxes = new TaxesSummation(new UniversalTax());
+            _allDiscounts = new DiscountsSummation(new UniversalDiscount(),
                 new UPCBasedDiscount(productUpc));
         }
         

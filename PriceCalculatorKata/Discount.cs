@@ -34,11 +34,11 @@ namespace PriceCalculatorKata.Dicsount
         }
     }
 
-    public class AllDiscounts : IDiscount
+    public class DiscountsSummation : IDiscount
     {
         private IDiscount[] _discounts;
 
-        public AllDiscounts(params IDiscount[] discounts)
+        public DiscountsSummation(params IDiscount[] discounts)
         {
             _discounts = discounts;
         }
