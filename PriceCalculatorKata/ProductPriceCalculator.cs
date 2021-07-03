@@ -8,20 +8,29 @@ namespace PriceCalculatorKata
         float Calculate(Product product);
     }
 
+    public enum DiscountCombinationMethod
+    {
+        Additive,
+        Multiplicative
+    }
+
     public class ProductPriceCalculator : IPriceCalculator
     {
         private readonly IPriceModifier[] _allTaxes;
         private readonly IPriceModifier[] _lowPrecedenceDiscounts;
         private readonly IPriceModifier[] _highPrecedenceDiscounts;
         private readonly IPriceModifier[] _expenses;
+        private DiscountCombinationMethod _discountCombinationMethod;
 
         public ProductPriceCalculator(IPriceModifier[] allTaxes, IPriceModifier[] lowPrecedenceDiscounts,
-            IPriceModifier[] highPrecedenceDiscounts, IPriceModifier[] expenses)
+            IPriceModifier[] highPrecedenceDiscounts, IPriceModifier[] expenses,
+            DiscountCombinationMethod discountCombinationMethod = DiscountCombinationMethod.Additive)
         {
             _allTaxes = allTaxes;
             _lowPrecedenceDiscounts = lowPrecedenceDiscounts;
             _highPrecedenceDiscounts = highPrecedenceDiscounts;
             _expenses = expenses;
+            _discountCombinationMethod = discountCombinationMethod;
         }
 
         public float Calculate(Product product)
