@@ -1,41 +1,36 @@
 ﻿using System;
-using PriceCalculatorKata.Dicsount;
-using PriceCalculatorKata.Tax;
+using PriceCalculatorKata.PriceModifier;
+
 
 namespace PriceCalculatorKata.Report
 {
     public interface IReporter
     {
-        void Report(Action<string> display);
+        void Report(Product product,Action<string> display);
     }
 
     public class ProductReporter : IReporter
     {
-        private Product _product;
-        private IDiscount _allDiscounts;
         private ProductPriceCalculator _productPriceCalculator;
 
-        public ProductReporter(Product product)
+        public ProductReporter(ProductPriceCalculator productPriceCalculator)
         {
-            _product = product;
-            _allDiscounts = new DiscountsSummation(new UniversalDiscount(),
-                new UPCBasedDiscount(_product.UPC));
-            _productPriceCalculator = new ProductPriceCalculator(product);
+            _productPriceCalculator = productPriceCalculator;
         }
 
 
-        public void Report(Action<string> displayMethod)
+        public void Report(Product product, Action<string> displayMethod)
         {
-            displayMethod($"{_product.Name}'s price before tax : {_product.BasePrice:0.00}$" +
-                          $" and after a {UniversalTax.Tax}% tax : {_product.FinalPrice:0.00}$ with a discount of " +
-                          $"{GetDiscountTextRepresentation()}");
+            displayMethod($"{product.Name}'s price before tax : ${product.BasePrice:0.00}" +
+                          $" and after a {UniversalTax.Tax}% tax : ${product.FinalPrice:0.00} with a discount of " +
+                          $"${GetDiscountTextRepresentation(product)}");
         }
 
-        private string GetDiscountTextRepresentation()
+        private string GetDiscountTextRepresentation(Product product)
         {
-            return _allDiscounts.getDiscount() == 0
+            return _productPriceCalculator.CalculateDiscount(product) == 0
                 ? "no discount applied"
-                : $"with {_productPriceCalculator.CalculateDiscount():0.00}$ discount applied";
+                : $"with {_productPriceCalculator.CalculateDiscount(product):0.00}$ discount applied";
         }
     }
 }
