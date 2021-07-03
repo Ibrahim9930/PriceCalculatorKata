@@ -12,14 +12,17 @@ namespace PriceCalculatorKata.Report
     public class ProductReporter : IReporter
     {
         private Product _product;
-        private IDiscount _allDiscounts;
+        private IDiscount[] _allDiscounts;
         private ProductPriceCalculator _productPriceCalculator;
 
         public ProductReporter(Product product)
         {
             _product = product;
-            _allDiscounts = new DiscountsSummation(new UniversalDiscount(),
-                new UPCBasedDiscount(_product.UPC));
+            _allDiscounts = new IDiscount[]
+            {
+                new UniversalDiscount(),
+                new UPCBasedDiscount(_product.UPC)
+            };
             _productPriceCalculator = new ProductPriceCalculator(product);
         }
 
@@ -33,7 +36,12 @@ namespace PriceCalculatorKata.Report
 
         private string GetDiscountTextRepresentation()
         {
-            return _allDiscounts.getDiscount() == 0
+            float discountSummation = 0;
+            foreach (var discount in _allDiscounts)
+            {
+                discountSummation += discount.getDiscount();
+            }
+            return discountSummation == 0
                 ? "no discount applied"
                 : $"with {_productPriceCalculator.CalculateDiscount():0.00}$ discount applied";
         }

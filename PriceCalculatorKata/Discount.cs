@@ -33,26 +33,5 @@ namespace PriceCalculatorKata.Dicsount
             return UPCDiscounts.GetValueOrDefault(_productUPC);
         }
     }
-
-    public class DiscountsSummation : IDiscount
-    {
-        private IDiscount[] _discounts;
-
-        public DiscountsSummation(params IDiscount[] discounts)
-        {
-            _discounts = discounts;
-        }
-
-        public float getDiscount()
-        {
-            float discountSummation = 0;
-
-            foreach (var discount in _discounts)
-            {
-                discountSummation += discount.getDiscount();
-            }
-
-            return discountSummation;
-        }
-    }
+    
 }
