@@ -97,7 +97,7 @@ namespace PriceCalculatorKata
 
         private double CalculatePriceAfterHighPrecedenceDiscount(Product product)
         {
-            return (product.BasePrice - CalculateHighPrecedenceDiscount(product));
+            return RoundDigits(product.BasePrice - CalculateHighPrecedenceDiscount(product),4);
         }
 
         private double CalculateModifierSummation(IPriceModifier[] modifiers, Product product)
@@ -116,8 +116,8 @@ namespace PriceCalculatorKata
             double totalDiscounts = 0;
             foreach (var discount in discounts)
             {
-                float currentDiscount =
-                    RoundDigits(priceAccumulator * (discount.getModificationPercentage(product) / 100.0f));
+                double currentDiscount =
+                    RoundDigits(priceAccumulator * (discount.getModificationPercentage(product) / 100.0),4);
                 totalDiscounts += currentDiscount;
                 if (_discountCombinationMethod == DiscountCombinationMethod.Multiplicative)
                 {
@@ -125,7 +125,7 @@ namespace PriceCalculatorKata
                 }
             }
 
-            return RoundDigits(totalDiscounts);
+            return RoundDigits(totalDiscounts,4);
         }
 
         private void CapDiscounts(ref double totalDiscounts, Product product)
@@ -143,7 +143,7 @@ namespace PriceCalculatorKata
             }
         }
 
-        private static float RoundDigits(float unrounded)
+        private static double RoundDigits(double unrounded,int precision = 2)
         {
             return  Math.Round(unrounded, precision);
         }
