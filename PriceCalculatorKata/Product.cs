@@ -8,14 +8,16 @@ namespace PriceCalculatorKata
     public class Product
     {
         public string Name { get; set; }
-        private IPriceCalculator _priceCalculator;
-        private IReporter _reporter;
-        public Product(int UPC,float basePrice,IPriceCalculator priceCalculator,IReporter reporter)
+        private readonly IPriceCalculator _priceCalculator;
+        private readonly IReporter _reporter;
+        public Currency Currency { get; set; }
+        public Product(int UPC,float basePrice,IPriceCalculator priceCalculator,IReporter reporter,Currency? currency=null)
         {
             this.UPC = UPC;
             this.BasePrice = basePrice;
             _priceCalculator = priceCalculator;
             _reporter = reporter;
+            Currency = currency??new Currency(){CurrencyCode = "USD"};
         }
         public int UPC { get; private set; }
         private float _basePrice;

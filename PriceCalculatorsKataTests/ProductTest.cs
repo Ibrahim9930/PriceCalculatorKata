@@ -255,6 +255,7 @@ namespace PriceCalculatorsKataTests
             };
             Assert.AreEqual(20.45f, p.FinalPrice);
         }
+
         [Test]
         public void ProductPriceCalculationsWithoutRelativelyCappedDiscounts()
         {
@@ -279,6 +280,34 @@ namespace PriceCalculatorsKataTests
                 Name = "The Little Prince"
             };
             Assert.AreEqual(20.04f, p.FinalPrice);
+        }
+
+        [Test]
+        public void ProductReportingWithCurrencyConversion()
+        {
+            UniversalTax.Tax = 20;
+            IPriceModifier[] taxes = {new UniversalTax()};
+            IPriceModifier[] lowPrecedenceDiscounts = { };
+            IPriceModifier[] highPrecedenceDiscounts = { };
+            IPriceModifier[] expenses = { };
+            IPriceCalculator productPriceCalculator =
+                new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
+            IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator,
+                new Currency() {CurrencyCode = "GBP"});
+
+            Product product = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            {
+                Name = "The Little Prince",
+            };
+            product.Report(async s =>
+            {
+                float convertedBasePrice = await 
+                    product.Currency.ConvertTo((productReporter as ProductReporter).Currency, product.BasePrice);
+                Regex rx = new Regex("(?<=(base price).*)([0-9]+.[0-9]+)", RegexOptions.IgnoreCase);
+                MatchCollection matches = rx.Matches(s);
+                var match = matches.Single();
+                Assert.AreEqual("14.65", match.Value);
+            });
         }
     }
 }
