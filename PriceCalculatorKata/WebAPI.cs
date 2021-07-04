@@ -40,7 +40,7 @@ namespace PriceCalculatorKata
             }
 
             string requestURI = endpoint + "?" + httpConcatenatedArguments;
-            var response = await _client.GetAsync(requestURI);
+            var response =  _client.GetAsync(requestURI).Result;
             response.EnsureSuccessStatusCode();
             dynamic reponseContent = response.Content.ReadAsAsync<ExpandoObject>().Result;
             var dic = new Dictionary<string, object>(reponseContent);
