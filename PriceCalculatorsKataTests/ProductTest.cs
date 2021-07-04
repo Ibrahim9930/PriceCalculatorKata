@@ -22,23 +22,23 @@ namespace PriceCalculatorsKataTests
             IPriceModifier[] highPrecedenceDiscounts = {new UPCBasedDiscount()};
             IPriceModifier[] expenses =
             {
-                new AbsoluteExpense(2.2f, "Transport"),
+                new AbsoluteExpense(2.2, "Transport"),
                 new RelativeExpense(1, "Packaging")
             };
             IPriceCalculator productPriceCalculator =
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
-            var roundedUpPriceProduct = new Product(0, 20.256f, productPriceCalculator, productReporter)
+            var roundedUpPriceProduct = new Product(0, 20.256, productPriceCalculator, productReporter)
             {
                 Name = "testing product",
             };
-            var roundedDownPriceProduct = new Product(1, 20.254f, productPriceCalculator, productReporter)
+            var roundedDownPriceProduct = new Product(1, 20.254, productPriceCalculator, productReporter)
             {
                 Name = "testing product",
             };
 
-            Assert.AreEqual(20.26f, roundedUpPriceProduct.BasePrice);
-            Assert.AreEqual(20.25f, roundedDownPriceProduct.BasePrice);
+            Assert.AreEqual(20.26, roundedUpPriceProduct.BasePrice);
+            Assert.AreEqual(20.25, roundedDownPriceProduct.BasePrice);
         }
 
         [Test]
@@ -55,11 +55,11 @@ namespace PriceCalculatorsKataTests
             IPriceCalculator productPriceCalculator =
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
-            Product productWithDefaultTax = new Product(1, 20.25f, productPriceCalculator, productReporter)
+            Product productWithDefaultTax = new Product(1, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince",
             };
-            Assert.AreEqual(21.26f, productWithDefaultTax.FinalPrice);
+            Assert.AreEqual(21.26, productWithDefaultTax.FinalPrice);
         }
 
         [Test]
@@ -76,11 +76,11 @@ namespace PriceCalculatorsKataTests
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
 
-            Product product = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product product = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(19.78f, Math.Round(product.FinalPrice), 2);
+            Assert.AreEqual(19.78, Math.Round(product.FinalPrice), 2);
         }
 
         [Test]
@@ -98,11 +98,11 @@ namespace PriceCalculatorsKataTests
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
             UniversalTax.Tax = 21;
 
-            Product product = new Product(789, 20.25f, productPriceCalculator, productReporter)
+            Product product = new Product(789, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(21.46f, Math.Round(product.FinalPrice), 2);
+            Assert.AreEqual(21.46, Math.Round(product.FinalPrice), 2);
         }
 
         [Test]
@@ -116,17 +116,17 @@ namespace PriceCalculatorsKataTests
             IPriceModifier[] highPrecedenceDiscounts = { };
             IPriceModifier[] expenses =
             {
-                new AbsoluteExpense(2.2f, "Transport"),
+                new AbsoluteExpense(2.2, "Transport"),
                 new RelativeExpense(1, "Packaging")
             };
             IPriceCalculator productPriceCalculator =
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
-            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product p = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(22.44f, p.FinalPrice);
+            Assert.AreEqual(22.44, p.FinalPrice);
         }
 
         [Test]
@@ -141,11 +141,11 @@ namespace PriceCalculatorsKataTests
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
 
-            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product p = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(24.5f, p.FinalPrice);
+            Assert.AreEqual(24.5, p.FinalPrice);
         }
 
         [Test]
@@ -159,14 +159,14 @@ namespace PriceCalculatorsKataTests
             IPriceModifier[] highPrecedenceDiscounts = { };
             IPriceModifier[] expenses =
             {
-                new AbsoluteExpense(2.2f, "Transport"),
+                new AbsoluteExpense(2.2, "Transport"),
                 new RelativeExpense(1, "Packaging")
             };
             IPriceCalculator productPriceCalculator =
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
 
-            Product product = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product product = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince",
             };
@@ -190,18 +190,18 @@ namespace PriceCalculatorsKataTests
             IPriceModifier[] highPrecedenceDiscounts = { };
             IPriceModifier[] expenses =
             {
-                new AbsoluteExpense(2.2f, "Transport"),
+                new AbsoluteExpense(2.2, "Transport"),
                 new RelativeExpense(1, "Packaging")
             };
             IPriceCalculator productPriceCalculator =
                 new ProductPriceCalculator(taxes, lowPrecedenceDiscounts, highPrecedenceDiscounts, expenses,
                     DiscountCombinationMethod.Multiplicative);
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
-            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product p = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(22.66f, p.FinalPrice);
+            Assert.AreEqual(22.66, p.FinalPrice);
         }
 
         [Test]
@@ -223,11 +223,11 @@ namespace PriceCalculatorsKataTests
                     });
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
 
-            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product p = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(20.50f, p.FinalPrice);
+            Assert.AreEqual(20.50, p.FinalPrice);
         }
 
         [Test]
@@ -249,11 +249,11 @@ namespace PriceCalculatorsKataTests
                     });
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
 
-            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product p = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(20.45f, p.FinalPrice);
+            Assert.AreEqual(20.45, p.FinalPrice);
         }
 
         [Test]
@@ -275,11 +275,11 @@ namespace PriceCalculatorsKataTests
                     });
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator);
 
-            Product p = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product p = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince"
             };
-            Assert.AreEqual(20.04f, p.FinalPrice);
+            Assert.AreEqual(20.04, p.FinalPrice);
         }
 
         [Test]
@@ -295,13 +295,13 @@ namespace PriceCalculatorsKataTests
             IReporter productReporter = new ProductReporter((ProductPriceCalculator) productPriceCalculator,
                 new Currency() {CurrencyCode = "GBP"});
 
-            Product product = new Product(12345, 20.25f, productPriceCalculator, productReporter)
+            Product product = new Product(12345, 20.25, productPriceCalculator, productReporter)
             {
                 Name = "The Little Prince",
             };
             product.Report(async s =>
             {
-                float convertedBasePrice = await 
+                double convertedBasePrice = await 
                     product.Currency.ConvertTo((productReporter as ProductReporter).Currency, product.BasePrice);
                 Regex rx = new Regex("(?<=(base price).*)([0-9]+.[0-9]+)", RegexOptions.IgnoreCase);
                 MatchCollection matches = rx.Matches(s);

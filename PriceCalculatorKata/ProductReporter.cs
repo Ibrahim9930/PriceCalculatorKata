@@ -26,7 +26,7 @@ namespace PriceCalculatorKata.Report
 
         public async Task Report(Product product, Action<string> displayMethod)
         {
-            Dictionary<string, float> priceModifiersAmounts = new Dictionary<string, float>()
+            Dictionary<string, double> priceModifiersAmounts = new Dictionary<string, double>()
             {
                 {"Base Price",product.BasePrice},
                 {"Tax",_productPriceCalculator.CalculateTax(product)},
@@ -40,7 +40,7 @@ namespace PriceCalculatorKata.Report
             displayMethod($"{product.Name}\n{modifiersReportingString}");
         }
 
-        private string CreateModifiersReportingString(Dictionary<string, float> priceModifiersAmounts)
+        private string CreateModifiersReportingString(Dictionary<string, double> priceModifiersAmounts)
         {
             string output = "";
             foreach (var modifiersAmount in priceModifiersAmounts)
@@ -51,7 +51,7 @@ namespace PriceCalculatorKata.Report
             return output;
         }
 
-        private async Task ConvertCurrencyIfNeeded(Dictionary<string, float> priceModifiersAmounts,Product product)
+        private async Task ConvertCurrencyIfNeeded(Dictionary<string, double> priceModifiersAmounts,Product product)
         {
             if (!Currency.Equals(product.Currency))
             {

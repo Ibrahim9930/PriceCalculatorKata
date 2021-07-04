@@ -5,7 +5,7 @@ namespace PriceCalculatorKata
 {
     public interface IPriceCalculator
     {
-        float Calculate(Product product);
+        double Calculate(Product product);
     }
 
     public enum DiscountCombinationMethod
@@ -22,7 +22,7 @@ namespace PriceCalculatorKata
 
     public struct DiscountCap
     {
-        public float Amount;
+        public double Amount;
         public CappingMethod CappingMethod;
     }
 
@@ -48,61 +48,61 @@ namespace PriceCalculatorKata
             _discountCombinationMethod = discountCombinationMethod;
             _cap = discountCap ?? new DiscountCap()
             {
-                Amount = float.MaxValue,
+                Amount = double.MaxValue,
                 CappingMethod = CappingMethod.Absolute
             };
         }
 
-        public float Calculate(Product product)
+        public double Calculate(Product product)
         {
             return RoundDigits(product.BasePrice + CalculateTax(product) + CalculateExpenses(product) -
                                CalculateDiscount(product));
         }
 
-        public float CalculateTax(Product product)
+        public double CalculateTax(Product product)
         {
-            float taxSummation = CalculateModifierSummation(_allTaxes, product);
+            double taxSummation = CalculateModifierSummation(_allTaxes, product);
 
-            return RoundDigits(CalculatePriceAfterHighPrecedenceDiscount(product) * (taxSummation / 100.0f));
+            return RoundDigits(CalculatePriceAfterHighPrecedenceDiscount(product) * (taxSummation / 100.0));
         }
 
-        public float CalculateExpenses(Product product)
+        public double CalculateExpenses(Product product)
         {
-            float expenseSummation = CalculateModifierSummation(_expenses, product);
+            double expenseSummation = CalculateModifierSummation(_expenses, product);
 
-            return RoundDigits(product.BasePrice * (expenseSummation / 100.0f));
+            return RoundDigits(product.BasePrice * (expenseSummation / 100.0));
         }
 
-        public float CalculateDiscount(Product product)
+        public double CalculateDiscount(Product product)
         {
-            float highPrecedenceDiscount =
+            double highPrecedenceDiscount =
                 CalculateHighPrecedenceDiscount(product);
-            float lowPrecedenceDiscount =
+            double lowPrecedenceDiscount =
                 RoundDigits(CalculateLowPrecedenceDiscount(product));
-            float totalDiscounts = highPrecedenceDiscount + lowPrecedenceDiscount;
+            double totalDiscounts = highPrecedenceDiscount + lowPrecedenceDiscount;
             CapDiscounts(ref totalDiscounts, product);
             return RoundDigits(totalDiscounts);
         }
 
-        private float CalculateHighPrecedenceDiscount(Product product)
+        private double CalculateHighPrecedenceDiscount(Product product)
         {
             return CalculateDiscountAmount(_highPrecedenceDiscounts, product.BasePrice, product);
         }
 
-        private float CalculateLowPrecedenceDiscount(Product product)
+        private double CalculateLowPrecedenceDiscount(Product product)
         {
             return CalculateDiscountAmount(_lowPrecedenceDiscounts, CalculatePriceAfterHighPrecedenceDiscount(product),
                 product);
         }
 
-        private float CalculatePriceAfterHighPrecedenceDiscount(Product product)
+        private double CalculatePriceAfterHighPrecedenceDiscount(Product product)
         {
-            return (product.BasePrice - CalculateHighPrecedenceDiscount(product));
+            return RoundDigits(product.BasePrice - CalculateHighPrecedenceDiscount(product),4);
         }
 
-        private float CalculateModifierSummation(IPriceModifier[] modifiers, Product product)
+        private double CalculateModifierSummation(IPriceModifier[] modifiers, Product product)
         {
-            float sum = 0;
+            double sum = 0;
             foreach (var modifier in modifiers)
             {
                 sum += modifier.getModificationPercentage(product);
@@ -111,13 +111,13 @@ namespace PriceCalculatorKata
             return sum;
         }
 
-        private float CalculateDiscountAmount(IPriceModifier[] discounts, float priceAccumulator, Product product)
+        private double CalculateDiscountAmount(IPriceModifier[] discounts, double priceAccumulator, Product product)
         {
-            float totalDiscounts = 0;
+            double totalDiscounts = 0;
             foreach (var discount in discounts)
             {
-                float currentDiscount =
-                    RoundDigits(priceAccumulator * (discount.getModificationPercentage(product) / 100.0f));
+                double currentDiscount =
+                    RoundDigits(priceAccumulator * (discount.getModificationPercentage(product) / 100.0),4);
                 totalDiscounts += currentDiscount;
                 if (_discountCombinationMethod == DiscountCombinationMethod.Multiplicative)
                 {
@@ -125,10 +125,10 @@ namespace PriceCalculatorKata
                 }
             }
 
-            return RoundDigits(totalDiscounts);
+            return RoundDigits(totalDiscounts,4);
         }
 
-        private void CapDiscounts(ref float totalDiscounts, Product product)
+        private void CapDiscounts(ref double totalDiscounts, Product product)
         {
             if (_cap.CappingMethod == CappingMethod.Absolute)
             {
@@ -137,15 +137,15 @@ namespace PriceCalculatorKata
             }
             else if (_cap.CappingMethod == CappingMethod.Relative)
             {
-                float cappingAmount = (_cap.Amount / 100.0f) * product.BasePrice;
+                double cappingAmount = (_cap.Amount / 100.0) * product.BasePrice;
                 if (totalDiscounts > cappingAmount)
                     totalDiscounts = cappingAmount;
             }
         }
 
-        private static float RoundDigits(float unrounded)
+        private static double RoundDigits(double unrounded,int precision = 2)
         {
-            return (float) Math.Round(unrounded, 2);
+            return  Math.Round(unrounded, precision);
         }
     }
 }
