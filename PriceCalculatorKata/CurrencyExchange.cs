@@ -30,6 +30,11 @@ namespace PriceCalculatorKata
 
         private static IWebAPI _webAPI;
 
+        public override bool Equals(object? otherCurrency)
+        {
+            return otherCurrency is Currency ? CurrencyCode.Equals(((Currency) otherCurrency).CurrencyCode) : false;
+        }
+
         public async Task<float> ConvertTo(Currency toCurrency, float amount)
         {
             var response = await _webAPI.GetResponse("convert", new Dictionary<string, object>()
