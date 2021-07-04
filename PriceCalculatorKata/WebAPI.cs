@@ -9,11 +9,13 @@ namespace PriceCalculatorKata
 {
     public interface IWebAPI
     {
-        public Task<ImmutableDictionary<string, object>> GetResponse(string endpoint,
+        public string BaseAddress { get; set; }
+
+        public Task<Dictionary<string, object>> GetResponse(string endpoint,
             Dictionary<string, object> requestArguments);
     }
 
-    class HttpClientWebAPI : IWebAPI
+    public class HttpClientWebAPI : IWebAPI
     {
         private HttpClient _client;
 
@@ -28,7 +30,7 @@ namespace PriceCalculatorKata
             _client = new HttpClient();
         }
 
-        public async Task<ImmutableDictionary<string, object>> GetResponse(string endpoint,
+        public async Task<Dictionary<string, object>> GetResponse(string endpoint,
             Dictionary<string, object> requestArguments)
         {
             string httpConcatenatedArguments = "";
@@ -36,11 +38,13 @@ namespace PriceCalculatorKata
             {
                 httpConcatenatedArguments += $"{argument.Key}={argument.Value}&";
             }
-            
-            var response = await _client.GetAsync(endpoint + "?" + httpConcatenatedArguments);
+
+            string requestURI = endpoint + "?" + httpConcatenatedArguments;
+            var response = await _client.GetAsync(requestURI);
             response.EnsureSuccessStatusCode();
-            dynamic reponseContent = await response.Content.ReadAsAsync<ExpandoObject>();
-            return ((ImmutableDictionary<string, object>) reponseContent).ToImmutableDictionary();
+            dynamic reponseContent = response.Content.ReadAsAsync<ExpandoObject>().Result;
+            var dic = new Dictionary<string, object>(reponseContent);
+            return dic;
         }
     }
 }
