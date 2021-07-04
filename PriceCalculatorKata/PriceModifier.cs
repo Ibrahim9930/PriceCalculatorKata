@@ -5,14 +5,14 @@ namespace PriceCalculatorKata.PriceModifier
 {
     public interface IPriceModifier
     {
-        float getModificationPercentage(Product product);
+        double getModificationPercentage(Product product);
     }
 
     public class UniversalDiscount : IPriceModifier
     {
-        public static float Discount = 0;
+        public static double Discount = 0;
 
-        public float getModificationPercentage(Product product)
+        public double getModificationPercentage(Product product)
         {
             return Discount;
         }
@@ -20,10 +20,10 @@ namespace PriceCalculatorKata.PriceModifier
 
     public class UPCBasedDiscount : IPriceModifier
     {
-        public static Dictionary<int, float> UPCDiscounts { get; private set; } = new Dictionary<int, float>();
+        public static Dictionary<int, double> UPCDiscounts { get; private set; } = new Dictionary<int, double>();
 
 
-        public float getModificationPercentage(Product product)
+        public double getModificationPercentage(Product product)
         {
             return UPCDiscounts.GetValueOrDefault(product.UPC);
         }
@@ -31,9 +31,9 @@ namespace PriceCalculatorKata.PriceModifier
 
     public class UniversalTax : IPriceModifier
     {
-        public static float Tax = 0;
+        public static double Tax = 0;
 
-        public float getModificationPercentage(Product product)
+        public double getModificationPercentage(Product product)
         {
             return Tax;
         }
@@ -42,16 +42,16 @@ namespace PriceCalculatorKata.PriceModifier
     public class AbsoluteExpense : IPriceModifier
     {
         public string Description { get; private set; }
-        public float Amount { get; private set; }
+        public double Amount { get; private set; }
 
-        public AbsoluteExpense(float amount, string description)
+        public AbsoluteExpense(double amount, string description)
         {
             Amount = amount;
             Description = description;
         }
 
 
-        public float getModificationPercentage(Product product)
+        public double getModificationPercentage(Product product)
         {
             return (Amount / product.BasePrice) * 100;
         }
@@ -60,15 +60,15 @@ namespace PriceCalculatorKata.PriceModifier
     public class RelativeExpense : IPriceModifier
     {
         public string Description { get; private set; }
-        public float Amount { get; private set; }
+        public double Amount { get; private set; }
 
-        public RelativeExpense(float amount, string description)
+        public RelativeExpense(double amount, string description)
         {
             Amount = amount;
             Description = description;
         }
 
-        public float getModificationPercentage(Product product)
+        public double getModificationPercentage(Product product)
         {
             return Amount;
         }

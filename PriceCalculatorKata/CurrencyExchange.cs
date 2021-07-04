@@ -35,7 +35,7 @@ namespace PriceCalculatorKata
             return otherCurrency is Currency ? CurrencyCode.Equals(((Currency) otherCurrency).CurrencyCode) : false;
         }
 
-        public async Task<float> ConvertTo(Currency toCurrency, float amount)
+        public async Task<double> ConvertTo(Currency toCurrency, double amount)
         {
             var response = await _webAPI.GetResponse("convert", new Dictionary<string, object>()
             {
